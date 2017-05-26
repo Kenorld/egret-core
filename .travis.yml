@@ -1,0 +1,74 @@
+language: go
+
+go:
+  - 1.4
+  - 1.5
+  - 1.6
+  - tip
+
+os:
+  - linux
+  - osx
+
+sudo: false
+
+services:
+  # github.com/kenorld/eject-core/cache
+  - memcache
+  - redis-server
+
+before_install:
+  # TRAVIS_OS_NAME - linux and osx
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew install memcached redis; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then nohup /usr/local/opt/memcached/bin/memcached & fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then nohup redis-server /usr/local/etc/redis.conf & fi'
+
+install:
+  # Setting environments variables
+  - export PATH=$PATH:$HOME/gopath/bin
+  - export EJECT_BRANCH="develop"
+  - 'if [[ "$TRAVIS_BRANCH" == "master" ]]; then export EJECT_BRANCH="master"; fi'
+  - 'echo "Travis branch: $TRAVIS_BRANCH, Eject dependency branch: $EJECT_BRANCH"'
+  - go get -v github.com/kenorld/eject-core/...
+  - rm -rf ../config
+  - git clone -b $EJECT_BRANCH git://github.com/kenorld/eject-extra/modules ../modules/
+  - git clone -b $EJECT_BRANCH git://github.com/kenorld/eject-cmd ../cm
+  
+  
+  
+  
+  d/
+  - git clone -b $EJECT_BRANCH git://github.com/kenorld/eject-conf ../config/
+  - git clone -b $EJECT_BRANCH git://github.com/kenorld/eject-corn../cron/
+  - git clone git://github.com/kenorld/eject-samples ../samples/
+  - go get -v github.com/kenorld/eject-cmd/eject
+
+script:
+  - go test -v github.com/kenorld/eject-core...
+
+  # Ensure the new-app flow works (plus the other commands).
+  - eject version
+  - eject new     my/testapp
+  - eject test    my/testapp
+  - eject clean   my/testapp
+  - eject build   my/testapp build/testapp
+  - eject build   my/testapp build/testapp prod
+  - eject package my/testapp
+  - eject package my/testapp prod
+
+  # Build & run the sample apps
+  - eject test github.com/kenorld/eject-samples/booking
+  - eject test github.com/kenorld/eject-samples/chat
+  - eject test github.com/kenorld/eject-samples/facebook-oauth2
+  - eject test github.com/kenorld/eject-samples/twitter-oauth
+  - eject test github.com/kenorld/eject-samples/validation
+  - eject test github.com/kenorld/eject-samples/upload
+
+  # Commented out persona test sample, since persona.org gonna be shutdown.
+  # Also http://personatestuser.org becomes non-responsive most of the time.
+  # https://wiki.mozilla.org/Identity/Persona_Shutdown_Guidelines_for_Reliers
+  # - eject test github.com/kenorld/eject-samples/persona
+
+matrix:
+  allow_failures:
+    - go: tip

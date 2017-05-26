@@ -1,0 +1,18 @@
+<html>
+  <head>
+  </head>
+  <h1>Index of - {{.Entity.Base}}</h1>
+  <hr>
+  <a href="../">[../]</a><br><br>
+  <table>
+  {{range .Entity.Files}}
+    <tr><td><a href="{{.Name}}{{if .IsDir}}/{{end}}">{{.Name}}{{if .IsDir}}/{{end}}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{.ModTime.Format "02-01-2006 15:04:05"}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{.Size}}</td></li>
+    {{else}}
+    No files
+  {{end}}
+  </table>
+  </ul>
+  <hr>
+  </body>
+</html>
