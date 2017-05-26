@@ -26,20 +26,20 @@ before_install:
 install:
   # Setting environments variables
   - export PATH=$PATH:$HOME/gopath/bin
-  - export EJECT_BRANCH="develop"
-  - 'if [[ "$TRAVIS_BRANCH" == "master" ]]; then export EJECT_BRANCH="master"; fi'
-  - 'echo "Travis branch: $TRAVIS_BRANCH, Egret dependency branch: $EJECT_BRANCH"'
+  - export EGRET_BRANCH="develop"
+  - 'if [[ "$TRAVIS_BRANCH" == "master" ]]; then export EGRET_BRANCH="master"; fi'
+  - 'echo "Travis branch: $TRAVIS_BRANCH, Egret dependency branch: $EGRET_BRANCH"'
   - go get -v github.com/kenorld/egret-core/...
   - rm -rf ../config
-  - git clone -b $EJECT_BRANCH git://github.com/kenorld/egret-extra/modules ../modules/
-  - git clone -b $EJECT_BRANCH git://github.com/kenorld/egret-cmd ../cm
+  - git clone -b $EGRET_BRANCH git://github.com/kenorld/egret-extra/modules ../modules/
+  - git clone -b $EGRET_BRANCH git://github.com/kenorld/egret-cmd ../cm
   
   
   
   
   d/
-  - git clone -b $EJECT_BRANCH git://github.com/kenorld/egret-conf ../config/
-  - git clone -b $EJECT_BRANCH git://github.com/kenorld/egret-corn../cron/
+  - git clone -b $EGRET_BRANCH git://github.com/kenorld/egret-conf ../config/
+  - git clone -b $EGRET_BRANCH git://github.com/kenorld/egret-corn../cron/
   - git clone git://github.com/kenorld/egret-samples ../samples/
   - go get -v github.com/kenorld/egret-cmd/egret
 

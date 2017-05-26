@@ -49,7 +49,7 @@ cookie:
   http_only: false
 
   # Each cookie set by Egret is prefixed with this string.
-  prefix: EJECT
+  prefix: EGRET
 
   # A secure cookie has the secure attribute enabled and is only used via HTTPS,
   # ensuring that the cookie is always encrypted when transmitting from client to

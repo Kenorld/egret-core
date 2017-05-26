@@ -292,7 +292,7 @@ func Init(mode, importPath, srcPath string) {
 
 	AppName = Config.GetStringDefault("name", "(not set)")
 	AppRoot = Config.GetStringDefault("root", "")
-	CookiePrefix = Config.GetStringDefault("cookie.prefix", "EJECT")
+	CookiePrefix = Config.GetStringDefault("cookie.prefix", "EGRET")
 	CookieDomain = Config.GetStringDefault("cookie.domain", "")
 	CookieSecure = Config.GetBoolDefault("cookie.secure", !DevMode)
 	TemplateDelims = Config.GetStringDefault("template.delimiters", "")
