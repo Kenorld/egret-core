@@ -1,4 +1,4 @@
-package eject
+package egret
 
 import (
 	"bytes"
@@ -14,7 +14,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/kenorld/eject-conf"
+	"github.com/kenorld/egret-conf"
 	"github.com/Sirupsen/logrus"
 )
 
@@ -181,12 +181,12 @@ func Equal(a, b interface{}) bool {
 
 // ClientIP method returns client IP address from HTTP request.
 //
-// Note: Set property "app.behind.proxy" to true only if Eject is running
+// Note: Set property "app.behind.proxy" to true only if Egret is running
 // behind proxy like nginx, haproxy, apache, etc. Otherwise
-// you may get inaccurate Client IP address. Eject parses the
+// you may get inaccurate Client IP address. Egret parses the
 // IP address in the order of X-Forwarded-For, X-Real-IP.
 //
-// By default eject will get http.Request's RemoteAddr
+// By default egret will get http.Request's RemoteAddr
 func ClientIP(r *http.Request) string {
 	if Config.GetBoolDefault("app.behind.proxy", false) {
 		// Header X-Forwarded-For

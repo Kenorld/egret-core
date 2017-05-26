@@ -46,7 +46,7 @@ type Getter interface {
 // It is assumed that callers will infrequently check returned errors, since any
 // request should be fulfillable without finding anything in the cache.  As a
 // result, all errors other than ErrCacheMiss and ErrNotStored will be logged to
-// eject.ERROR, so that the developer does not need to check the return value to
+// egret.ERROR, so that the developer does not need to check the return value to
 // discover things like deserialization or connection errors.
 type Cache interface {
 	// The Cache implements a Getter.
@@ -117,8 +117,8 @@ type Cache interface {
 var (
 	Instance Cache
 
-	ErrCacheMiss = errors.New("eject/cache: key not found.")
-	ErrNotStored = errors.New("eject/cache: not stored.")
+	ErrCacheMiss = errors.New("egret/cache: key not found.")
+	ErrNotStored = errors.New("egret/cache: not stored.")
 )
 
 // The package implements the Cache interface (as sugar).

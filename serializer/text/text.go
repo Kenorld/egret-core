@@ -1,7 +1,7 @@
 package text
 
 const (
-	// ContentType the custom key for the serializer, when used inside eject, Q web frameworks or simply net/http
+	// ContentType the custom key for the serializer, when used inside egret, Q web frameworks or simply net/http
 	ContentType = "text/plain"
 )
 
@@ -19,7 +19,7 @@ func New(cfg ...Config) *Serializer {
 	return &Serializer{config: c}
 }
 
-// ContentType the custom key for the serializer, when used inside eject, Q web frameworks or simply net/http
+// ContentType the custom key for the serializer, when used inside egret, Q web frameworks or simply net/http
 func (e *Serializer) ContentType() string {
 	return ContentType
 }

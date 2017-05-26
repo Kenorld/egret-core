@@ -1,8 +1,8 @@
-package: github.com/kenorld/eject-core
+package: github.com/kenorld/egret-core
 import:
-- package: github.com/kenorld/eject-conf
+- package: github.com/kenorld/egret-conf
   subpackages:
-  - github.com\kenorld\eject-conf
+  - github.com\kenorld\egret-conf
 - package: github.com/Sirupsen/logrus
   subpackages:
   - github.com\Sirupsen\logrus

@@ -1,4 +1,4 @@
-package eject
+package egret
 
 import (
 	"fmt"
@@ -32,7 +32,7 @@ type sourceLine struct {
 // the panic.  Returns nil if no relevant stack frame can be found.
 func NewErrorFromPanic(err interface{}) *Error {
 	// Parse the filename and line from the originating line of app code.
-	// /Users/robfig/code/gocode/src/eject/samples/booking/core/routes/hotels.go:191 (0x44735)
+	// /Users/robfig/code/gocode/src/egret/samples/booking/core/routes/hotels.go:191 (0x44735)
 	stack := string(debug.Stack())
 	frame, basePath := findRelevantStackFrame(stack)
 	if frame == -1 {

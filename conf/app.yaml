@@ -1,13 +1,13 @@
 ################################################################################
-# Eject configuration file
+# Egret configuration file
 # See:
-#   http://eject.github.io/manual/appconf.html
+#   http://egret.github.io/manual/appconf.html
 #   for more detailed documentation.
 ################################################################################
 
 # This sets the `AppName` variable which can be used in your code as
-#   `if eject.AppName {...}`
-name: Eject
+#   `if egret.AppName {...}`
+name: Egret
 
 # A secret string which is passed to cryptographically sign the cookie to prevent
 # (and detect) user modification.
@@ -36,7 +36,7 @@ serve:
   # unix_file_mode: 0666
 
 cookie:
-  # For any cookies set by Eject (Session,Flash,Error) these properties will set
+  # For any cookies set by Egret (Session,Flash,Error) these properties will set
   # the fields of:
   # http://golang.org/pkg/net/http/#Cookie
   #
@@ -48,7 +48,7 @@ cookie:
   # only to session-management cookies, and not other browser cookies.
   http_only: false
 
-  # Each cookie set by Eject is prefixed with this string.
+  # Each cookie set by Egret is prefixed with this string.
   prefix: EJECT
 
   # A secure cookie has the secure attribute enabled and is only used via HTTPS,
@@ -70,7 +70,7 @@ cookie:
   expires: "720h"
 
 format:
-  # The date format used by Eject. Possible formats defined by the Go `time`
+  # The date format used by Egret. Possible formats defined by the Go `time`
   # package (http://golang.org/pkg/time/#Parse)
   date: "01/22/2006"
   datetime: "01/22/2006 15:04"
@@ -95,11 +95,11 @@ render:
 
 ################################################################################
 # Section: dev
-# This section is evaluated when running Eject in dev mode. Like so:
-#   `eject run path/to/myapp`
+# This section is evaluated when running Egret in dev mode. Like so:
+#   `egret run path/to/myapp`
 "[dev]":
   # This sets `DevMode` variable to `true` which can be used in your code as
-  #   `if eject.DevMode {...}`
+  #   `if egret.DevMode {...}`
   #   or in your templates with
   #   `<no value>`
   dev_mode: true
@@ -120,15 +120,15 @@ render:
     
 
   log:
-    # Where to log the various Eject logs
+    # Where to log the various Egret logs
     output: "stdout"
     level: "info"
     format: "text"
 
 ################################################################################
 # Section: prod
-# This section is evaluated when running Eject in production mode. Like so:
-#   `eject run path/to/myapp prod`
+# This section is evaluated when running Egret in production mode. Like so:
+#   `egret run path/to/myapp prod`
 # See:
 #  [dev] section for documentation of the various settings
 "[prod]":
@@ -139,5 +139,5 @@ render:
     enabled: false
 
   log:
-    output: "eject.log"
+    output: "egret.log"
     level: "info"

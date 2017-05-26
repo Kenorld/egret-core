@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	// ContentType the custom key for the serializer, when used inside eject, Q web frameworks or simply net/http
+	// ContentType the custom key for the serializer, when used inside egret, Q web frameworks or simply net/http
 	ContentType = "application/javascript"
 )
 
@@ -33,7 +33,7 @@ var (
 	newLineB        = []byte("\n")
 )
 
-// ContentType the custom key for the serializer, when used inside eject, Q web frameworks or simply net/http
+// ContentType the custom key for the serializer, when used inside egret, Q web frameworks or simply net/http
 func (e *Serializer) ContentType() string {
 	return ContentType
 }

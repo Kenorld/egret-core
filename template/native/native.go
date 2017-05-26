@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	// ContentType the custom key for the serializer, when used inside eject, Q web frameworks or simply net/http
+	// ContentType the custom key for the serializer, when used inside egret, Q web frameworks or simply net/http
 	// ContentType = "text/html"
 	// NoLayout to disable layout for a particular template file
 	NoLayout = "@.|.@no_layout@.|.@"
@@ -73,7 +73,7 @@ func (s *Template) Funcs() map[string]interface{} {
 	return s.Config.Funcs
 }
 
-// ContentType the custom key for the serializer, when used inside eject, Q web frameworks or simply net/http
+// ContentType the custom key for the serializer, when used inside egret, Q web frameworks or simply net/http
 // func (s *Template) ContentType() string {
 // 	return ContentType
 // }

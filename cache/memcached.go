@@ -61,7 +61,7 @@ func (c MemcachedCache) Decrement(key string, delta uint64) (newValue uint64, er
 }
 
 func (c MemcachedCache) Flush() error {
-	err := errors.New("eject/cache: can not flush memcached.")
+	err := errors.New("egret/cache: can not flush memcached.")
 	logrus.WithFields(logrus.Fields{
 		"error": err,
 	}).Error("Cache error.")
@@ -113,6 +113,6 @@ func convertMemcacheError(err error) error {
 
 	logrus.WithFields(logrus.Fields{
 		"error": err,
-	}).Error("eject/cache.")
+	}).Error("egret/cache.")
 	return err
 }

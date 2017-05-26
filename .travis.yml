@@ -13,7 +13,7 @@ os:
 sudo: false
 
 services:
-  # github.com/kenorld/eject-core/cache
+  # github.com/kenorld/egret-core/cache
   - memcache
   - redis-server
 
@@ -28,46 +28,46 @@ install:
   - export PATH=$PATH:$HOME/gopath/bin
   - export EJECT_BRANCH="develop"
   - 'if [[ "$TRAVIS_BRANCH" == "master" ]]; then export EJECT_BRANCH="master"; fi'
-  - 'echo "Travis branch: $TRAVIS_BRANCH, Eject dependency branch: $EJECT_BRANCH"'
-  - go get -v github.com/kenorld/eject-core/...
+  - 'echo "Travis branch: $TRAVIS_BRANCH, Egret dependency branch: $EJECT_BRANCH"'
+  - go get -v github.com/kenorld/egret-core/...
   - rm -rf ../config
-  - git clone -b $EJECT_BRANCH git://github.com/kenorld/eject-extra/modules ../modules/
-  - git clone -b $EJECT_BRANCH git://github.com/kenorld/eject-cmd ../cm
+  - git clone -b $EJECT_BRANCH git://github.com/kenorld/egret-extra/modules ../modules/
+  - git clone -b $EJECT_BRANCH git://github.com/kenorld/egret-cmd ../cm
   
   
   
   
   d/
-  - git clone -b $EJECT_BRANCH git://github.com/kenorld/eject-conf ../config/
-  - git clone -b $EJECT_BRANCH git://github.com/kenorld/eject-corn../cron/
-  - git clone git://github.com/kenorld/eject-samples ../samples/
-  - go get -v github.com/kenorld/eject-cmd/eject
+  - git clone -b $EJECT_BRANCH git://github.com/kenorld/egret-conf ../config/
+  - git clone -b $EJECT_BRANCH git://github.com/kenorld/egret-corn../cron/
+  - git clone git://github.com/kenorld/egret-samples ../samples/
+  - go get -v github.com/kenorld/egret-cmd/egret
 
 script:
-  - go test -v github.com/kenorld/eject-core...
+  - go test -v github.com/kenorld/egret-core...
 
   # Ensure the new-app flow works (plus the other commands).
-  - eject version
-  - eject new     my/testapp
-  - eject test    my/testapp
-  - eject clean   my/testapp
-  - eject build   my/testapp build/testapp
-  - eject build   my/testapp build/testapp prod
-  - eject package my/testapp
-  - eject package my/testapp prod
+  - egret version
+  - egret new     my/testapp
+  - egret test    my/testapp
+  - egret clean   my/testapp
+  - egret build   my/testapp build/testapp
+  - egret build   my/testapp build/testapp prod
+  - egret package my/testapp
+  - egret package my/testapp prod
 
   # Build & run the sample apps
-  - eject test github.com/kenorld/eject-samples/booking
-  - eject test github.com/kenorld/eject-samples/chat
-  - eject test github.com/kenorld/eject-samples/facebook-oauth2
-  - eject test github.com/kenorld/eject-samples/twitter-oauth
-  - eject test github.com/kenorld/eject-samples/validation
-  - eject test github.com/kenorld/eject-samples/upload
+  - egret test github.com/kenorld/egret-samples/booking
+  - egret test github.com/kenorld/egret-samples/chat
+  - egret test github.com/kenorld/egret-samples/facebook-oauth2
+  - egret test github.com/kenorld/egret-samples/twitter-oauth
+  - egret test github.com/kenorld/egret-samples/validation
+  - egret test github.com/kenorld/egret-samples/upload
 
   # Commented out persona test sample, since persona.org gonna be shutdown.
   # Also http://personatestuser.org becomes non-responsive most of the time.
   # https://wiki.mozilla.org/Identity/Persona_Shutdown_Guidelines_for_Reliers
-  # - eject test github.com/kenorld/eject-samples/persona
+  # - egret test github.com/kenorld/egret-samples/persona
 
 matrix:
   allow_failures:

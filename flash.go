@@ -1,4 +1,4 @@
-package eject
+package egret
 
 import (
 	"fmt"
@@ -36,8 +36,8 @@ func (f Flash) Success(msg string, args ...interface{}) {
 	}
 }
 
-// FlashHandler is a Eject Handler that retrieves and sets the flash cookie.
-// Within Eject, it is available as a Flash attribute on Context instances.
+// FlashHandler is a Egret Handler that retrieves and sets the flash cookie.
+// Within Egret, it is available as a Flash attribute on Context instances.
 // The name of the Flash cookie is set as CookiePrefix + "_FLASH".
 func FlashHandler(ctx *Context) {
 	ctx.Flash = restoreFlash(ctx.Request.Request)

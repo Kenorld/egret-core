@@ -1,4 +1,4 @@
-package eject
+package egret
 
 import (
 	"io/ioutil"
@@ -19,12 +19,12 @@ import (
 // the following responses in the event of an error or invalid request;
 //   403(Forbidden): If the prefix filepath combination results in a directory.
 //   404(Not found): If the prefix and filepath combination results in a non-existent file.
-//   500(Internal Server Error): There are a few edge cases that would likely indicate some configuration error outside of eject.
+//   500(Internal Server Error): There are a few edge cases that would likely indicate some configuration error outside of egret.
 //
 //
 // Examples:
 // Serving a directory
-// eject.Static(router.Path("/**"), []string{"/public"}, eject.StaticOptions{"listing": true})
+// egret.Static(router.Path("/**"), []string{"/public"}, egret.StaticOptions{"listing": true})
 
 // Static Options
 // map[string]string{

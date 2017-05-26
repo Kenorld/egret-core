@@ -1,4 +1,4 @@
-package eject
+package egret
 
 import (
 	"crypto/rand"
@@ -130,8 +130,8 @@ func GetSessionFromCookie(cookie *http.Cookie) Session {
 	return session
 }
 
-// SessionHandler is a Eject Handler that retrieves and sets the session cookie.
-// Within Eject, it is available as a Session attribute on Context instances.
+// SessionHandler is a Egret Handler that retrieves and sets the session cookie.
+// Within Egret, it is available as a Session attribute on Context instances.
 // The name of the Session cookie is set as CookiePrefix + "_SESSION".
 func SessionHandler(ctx *Context) {
 	ctx.Session = restoreSession(ctx.Request.Request)

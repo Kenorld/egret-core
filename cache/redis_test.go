@@ -5,15 +5,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kenorld/eject-conf"
-	"github.com/kenorld/eject-core"
+	"github.com/kenorld/egret-conf"
+	"github.com/kenorld/egret-core"
 )
 
 // These tests require redis server running on localhost:6379 (the default)
 const redisTestServer = "localhost:6379"
 
 var newRedisCache = func(t *testing.T, defaultExpiration time.Duration) Cache {
-	eject.Config = config.NewContext()
+	egret.Config = config.NewContext()
 
 	c, err := net.Dial("tcp", redisTestServer)
 	if err == nil {

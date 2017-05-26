@@ -1,7 +1,7 @@
 tmp/
 routes/
 test-results/
-eject/eject
+egret/egret
 
 # editor
 *.swp

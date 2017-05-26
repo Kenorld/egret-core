@@ -12,12 +12,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/kenorld/eject-core/serializer/data"
-	"github.com/kenorld/eject-core/serializer/json"
-	"github.com/kenorld/eject-core/serializer/jsonp"
-	"github.com/kenorld/eject-core/serializer/markdown"
-	"github.com/kenorld/eject-core/serializer/text"
-	"github.com/kenorld/eject-core/serializer/xml"
+	"github.com/kenorld/egret-core/serializer/data"
+	"github.com/kenorld/egret-core/serializer/json"
+	"github.com/kenorld/egret-core/serializer/jsonp"
+	"github.com/kenorld/egret-core/serializer/markdown"
+	"github.com/kenorld/egret-core/serializer/text"
+	"github.com/kenorld/egret-core/serializer/xml"
 )
 
 type (

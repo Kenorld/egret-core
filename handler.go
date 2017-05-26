@@ -1,4 +1,4 @@
-package eject
+package egret
 
 // Handlers is the default set of global filters.
 // It may be set by the application on initialization.

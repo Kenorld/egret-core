@@ -1,4 +1,4 @@
-package eject
+package egret
 
 import (
 	"go/build"
@@ -14,17 +14,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kenorld/eject-conf"
-	"github.com/kenorld/eject-core/serializer"
-	"github.com/kenorld/eject-core/template"
-	"github.com/kenorld/eject-core/template/native"
+	"github.com/kenorld/egret-conf"
+	"github.com/kenorld/egret-core/serializer"
+	"github.com/kenorld/egret-core/template"
+	"github.com/kenorld/egret-core/template/native"
 
 	"github.com/Sirupsen/logrus"
 )
 
 const (
-	// EjectCoreImportPath eject core improt path
-	EjectCoreImportPath   = "github.com/kenorld/eject-core"
+	// EjectCoreImportPath egret core improt path
+	EjectCoreImportPath   = "github.com/kenorld/egret-core"
 	DefaultDateFormat     = "2006-01-02"
 	DefaultDateTimeFormat = "2006-01-02 15:04"
 )
@@ -45,8 +45,8 @@ var (
 	RunMode string // Application-defined (by default, "dev" or "prod")
 	DevMode bool   // if true, RunMode is a development mode.
 
-	// Eject installation details
-	EjectPath string // e.g. "/Users/user/gocode/src/eject-core"
+	// Egret installation details
+	EjectPath string // e.g. "/Users/user/gocode/src/egret-core"
 
 	// Where to look for templates
 	// Ordered by priority. (Earlier paths take precedence over later paths.)
@@ -55,7 +55,7 @@ var (
 
 	// ConfPaths where to look for configurations
 	// Config load order
-	// 1. framework (eject/conf/*)
+	// 1. framework (egret/conf/*)
 	// 2. application (conf/*)
 	// 3. user supplied configs (...) - User configs can override/add any from above
 	ConfPaths []string
@@ -207,12 +207,12 @@ var (
 	}
 )
 
-// Init initializes Eject -- it provides paths for getting around the app.
+// Init initializes Egret -- it provides paths for getting around the app.
 //
 // Params:
 //   mode - the run mode, which determines which app.yaml settings are used.
 //   importPath - the Go import path of the application.
-//   srcPath - the path to the source directory, containing Eject and the app.
+//   srcPath - the path to the source directory, containing Egret and the app.
 //     If not specified (""), then a functioning Go installation is required.
 func Init(mode, importPath, srcPath string) {
 	// Ignore trailing slashes.
@@ -221,17 +221,17 @@ func Init(mode, importPath, srcPath string) {
 	RunMode = mode
 
 	// If the SourcePath is not specified, find it using build.Import.
-	var ejectSourcePath string // may be different from the app source path
+	var egretSourcePath string // may be different from the app source path
 	if SourcePath == "" {
-		ejectSourcePath, SourcePath = findSrcPaths(importPath)
+		egretSourcePath, SourcePath = findSrcPaths(importPath)
 	} else {
-		// If the SourcePath was specified, assume both Eject and the app are within it.
+		// If the SourcePath was specified, assume both Egret and the app are within it.
 		SourcePath = path.Clean(SourcePath)
-		ejectSourcePath = SourcePath
+		egretSourcePath = SourcePath
 		packaged = true
 	}
 
-	EjectPath = filepath.Join(ejectSourcePath, filepath.FromSlash(EjectCoreImportPath))
+	EjectPath = filepath.Join(egretSourcePath, filepath.FromSlash(EjectCoreImportPath))
 	BasePath = filepath.Join(SourcePath, filepath.FromSlash(importPath))
 	AppCorePath = filepath.Join(BasePath, "core")
 
@@ -242,7 +242,7 @@ func Init(mode, importPath, srcPath string) {
 	}
 
 	// Config load order
-	// 1. framework (eject/conf/*)
+	// 1. framework (egret/conf/*)
 	// 2. application (conf/*)
 	// 3. user supplied configs (...) - User configs can override/add any from above
 	ConfPaths = append(
@@ -308,7 +308,7 @@ func Init(mode, importPath, srcPath string) {
 		"Version":          Version,
 		"BuildDate":        BuildDate,
 		"MinimumGoVersion": MinimumGoVersion,
-	}).Info("Initialized Eject.")
+	}).Info("Initialized Egret.")
 
 	initTemplate()
 	initSerializer()
@@ -378,9 +378,9 @@ func initLog() {
 	}
 }
 
-// findSrcPaths uses the "go/build" package to find the source root for Eject
+// findSrcPaths uses the "go/build" package to find the source root for Egret
 // and the app.
-func findSrcPaths(importPath string) (ejectSourcePath, appSourcePath string) {
+func findSrcPaths(importPath string) (egretSourcePath, appSourcePath string) {
 	var (
 		gopaths = filepath.SplitList(build.Default.GOPATH)
 		goroot  = build.Default.GOROOT
@@ -405,14 +405,14 @@ func findSrcPaths(importPath string) (ejectSourcePath, appSourcePath string) {
 		}).Fatal("Failed to import.")
 	}
 
-	ejectPkg, err := build.Import(EjectCoreImportPath, "", build.FindOnly)
+	egretPkg, err := build.Import(EjectCoreImportPath, "", build.FindOnly)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"error": err,
-		}).Fatal("Failed to find Eject.")
+		}).Fatal("Failed to find Egret.")
 	}
 
-	return ejectPkg.SrcRoot, appPkg.SrcRoot
+	return egretPkg.SrcRoot, appPkg.SrcRoot
 }
 
 type Module struct {
@@ -465,7 +465,7 @@ func addModule(name, importPath, modulePath string) {
 
 	// Hack: There is presently no way for the testrunner module to add the
 	// "test" subdirectory to the CodePaths.  So this does it instead.
-	// if importPath == Config.StringDefault("module.testrunner", "github.com/eject/modules/testrunner") {
+	// if importPath == Config.StringDefault("module.testrunner", "github.com/egret/modules/testrunner") {
 	// 	CodePaths = append(CodePaths, filepath.Join(BasePath, "tests"))
 	// }
 }
@@ -482,7 +482,7 @@ func ModuleByName(name string) (m Module, found bool) {
 
 func CheckInit() {
 	if !Initialized {
-		panic("Eject has not been initialized!")
+		panic("Egret has not been initialized!")
 	}
 }
 
@@ -496,7 +496,7 @@ func CheckInit() {
 // Ideally, your application should have only one call to init() in the file init.go.
 // The reason being that the call order of multiple init() functions in
 // the same package is undefined.
-// Inside of init() call eject.OnAppStart() for each function you wish to register.
+// Inside of init() call egret.OnAppStart() for each function you wish to register.
 //
 // Example:
 //
@@ -515,12 +515,12 @@ func CheckInit() {
 //          // set up filters...
 //
 //          // register startup functions
-//          eject.OnAppStart(InitDB)
-//          eject.OnAppStart(FillCache)
+//          egret.OnAppStart(InitDB)
+//          egret.OnAppStart(FillCache)
 //      }
 //
 // This can be useful when you need to establish connections to databases or third-party services,
-// setup app components, compile assets, or any thing you need to do between starting Eject and accepting connections.
+// setup app components, compile assets, or any thing you need to do between starting Egret and accepting connections.
 //
 func OnAppStart(f func(), order ...int) {
 	o := 1

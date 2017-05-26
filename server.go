@@ -1,4 +1,4 @@
-package eject
+package egret
 
 import (
 	"crypto/tls"
@@ -13,7 +13,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 
-	enet "github.com/kenorld/eject-core/net"
+	enet "github.com/kenorld/egret-core/net"
 	"golang.org/x/crypto/acme/autocert"
 	"golang.org/x/net/websocket"
 )
@@ -69,7 +69,7 @@ func handleInternal(w http.ResponseWriter, r *http.Request, ws *websocket.Conn) 
 	}
 
 	if DevMode {
-		// Eject request access log format
+		// Egret request access log format
 		// RequestStartTime ClientIP ResponseStatus RequestLatency HTTPMethod URLPath
 		// Sample format:
 		// 2016/05/25 17:46:37.112 127.0.0.1 200  270.157µs GET /
@@ -147,7 +147,7 @@ func (server *Server) run() {
 	if server.tlsEnabled {
 		typ += "/HTTP2"
 	}
-	Logger.Printf("Eject listen and serve %s on %v", typ, server.Addr)
+	Logger.Printf("Egret listen and serve %s on %v", typ, server.Addr)
 
 	err := server.Server.Serve(ln)
 	if realServeError(err) != nil {

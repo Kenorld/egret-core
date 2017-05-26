@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/garyburd/redigo/redis"
-	"github.com/kenorld/eject-core"
+	"github.com/kenorld/egret-core"
 )
 
 // Wraps the Redis client to meet the Cache interface.
@@ -16,14 +16,14 @@ type RedisCache struct {
 // until redigo supports sharding/clustering, only one host will be in hostList
 func NewRedisCache(host string, password string, defaultExpiration time.Duration) RedisCache {
 	var pool = &redis.Pool{
-		MaxIdle:     eject.Config.IntDefault("cache.redis.maxidle", 5),
-		MaxActive:   eject.Config.IntDefault("cache.redis.maxactive", 0),
-		IdleTimeout: time.Duration(eject.Config.IntDefault("cache.redis.idletimeout", 240)) * time.Second,
+		MaxIdle:     egret.Config.IntDefault("cache.redis.maxidle", 5),
+		MaxActive:   egret.Config.IntDefault("cache.redis.maxactive", 0),
+		IdleTimeout: time.Duration(egret.Config.IntDefault("cache.redis.idletimeout", 240)) * time.Second,
 		Dial: func() (redis.Conn, error) {
-			protocol := eject.Config.StringDefault("cache.redis.protocol", "tcp")
-			toc := time.Millisecond * time.Duration(eject.Config.IntDefault("cache.redis.timeout.connect", 10000))
-			tor := time.Millisecond * time.Duration(eject.Config.IntDefault("cache.redis.timeout.read", 5000))
-			tow := time.Millisecond * time.Duration(eject.Config.IntDefault("cache.redis.timeout.write", 5000))
+			protocol := egret.Config.StringDefault("cache.redis.protocol", "tcp")
+			toc := time.Millisecond * time.Duration(egret.Config.IntDefault("cache.redis.timeout.connect", 10000))
+			tor := time.Millisecond * time.Duration(egret.Config.IntDefault("cache.redis.timeout.read", 5000))
+			tow := time.Millisecond * time.Duration(egret.Config.IntDefault("cache.redis.timeout.write", 5000))
 			c, err := redis.DialTimeout(protocol, host, toc, tor, tow)
 			if err != nil {
 				return nil, err

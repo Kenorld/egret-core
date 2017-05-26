@@ -28,7 +28,7 @@ func (c InMemoryCache) Get(key string, ptrValue interface{}) error {
 		return nil
 	}
 
-	err := fmt.Errorf("eject/cache: attempt to get %s, but can not set value %v", key, v)
+	err := fmt.Errorf("egret/cache: attempt to get %s, but can not set value %v", key, v)
 	logrus.WithFields(logrus.Fields{
 		"error": err,
 	}).Error("Cache error")

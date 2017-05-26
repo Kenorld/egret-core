@@ -1,4 +1,4 @@
-package eject
+package egret
 
 import (
 	"errors"

@@ -1,7 +1,7 @@
-package eject
+package egret
 
 const (
-	// Current Eject version
+	// Current Egret version
 	Version = "0.1.1"
 
 	// Latest commit date

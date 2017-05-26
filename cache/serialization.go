@@ -8,7 +8,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 
-	"github.com/kenorld/eject-core"
+	"github.com/kenorld/egret-core"
 )
 
 // Serialize transforms the given value into bytes following these rules:
@@ -33,7 +33,7 @@ func Serialize(value interface{}) ([]byte, error) {
 		logrus.WithFields(logrus.Fields{
 			"value": value,
 			"error": err,
-		}).Error("eject/cache: gob encoding failed.")
+		}).Error("egret/cache: gob encoding failed.")
 		return nil, err
 	}
 	return b.Bytes(), nil
@@ -56,7 +56,7 @@ func Deserialize(byt []byte, ptr interface{}) (err error) {
 				logrus.WithFields(logrus.Fields{
 				"value": string(byt),
 				"error": err
-			}).Error("eject/cache: failed to parse int.")
+			}).Error("egret/cache: failed to parse int.")
 			} else {
 				p.SetInt(i)
 			}
@@ -69,7 +69,7 @@ func Deserialize(byt []byte, ptr interface{}) (err error) {
 				logrus.WithFields(logrus.Fields{
 				"value": string(byt),
 				"error": err
-			}).Error("eject/cache: failed to parse uint.")
+			}).Error("egret/cache: failed to parse uint.")
 			} else {
 				p.SetUint(i)
 			}
@@ -82,7 +82,7 @@ func Deserialize(byt []byte, ptr interface{}) (err error) {
 	if err = decoder.Decode(ptr); err != nil {
 		logrus.WithFields(logrus.Fields{
 				"error": err
-			}).Error("eject/cache: gob decoding failed")
+			}).Error("egret/cache: gob decoding failed")
 		return
 	}
 	return
