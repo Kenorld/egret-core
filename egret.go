@@ -23,8 +23,8 @@ import (
 )
 
 const (
-	// EjectCoreImportPath egret core improt path
-	EjectCoreImportPath   = "github.com/kenorld/egret-core"
+	// EgretCoreImportPath egret core improt path
+	EgretCoreImportPath   = "github.com/kenorld/egret-core"
 	DefaultDateFormat     = "2006-01-02"
 	DefaultDateTimeFormat = "2006-01-02 15:04"
 )
@@ -46,7 +46,7 @@ var (
 	DevMode bool   // if true, RunMode is a development mode.
 
 	// Egret installation details
-	EjectPath string // e.g. "/Users/user/gocode/src/egret-core"
+	EgretPath string // e.g. "/Users/user/gocode/src/egret-core"
 
 	// Where to look for templates
 	// Ordered by priority. (Earlier paths take precedence over later paths.)
@@ -231,7 +231,7 @@ func Init(mode, importPath, srcPath string) {
 		packaged = true
 	}
 
-	EjectPath = filepath.Join(egretSourcePath, filepath.FromSlash(EjectCoreImportPath))
+	EgretPath = filepath.Join(egretSourcePath, filepath.FromSlash(EgretCoreImportPath))
 	BasePath = filepath.Join(SourcePath, filepath.FromSlash(importPath))
 	AppCorePath = filepath.Join(BasePath, "core")
 
@@ -248,13 +248,13 @@ func Init(mode, importPath, srcPath string) {
 	ConfPaths = append(
 		[]string{
 			filepath.Join(BasePath, "conf"),
-			filepath.Join(EjectPath, "conf"),
+			filepath.Join(EgretPath, "conf"),
 		},
 		ConfPaths...)
 
 	TemplatePaths = []string{
 		filepath.Join(AppCorePath, "views"),
-		path.Join(EjectPath, "views"),
+		path.Join(EgretPath, "views"),
 	} // Load app.yaml
 	var err error
 
@@ -331,7 +331,7 @@ func initTemplate() {
 		tmpl = native.New(cfg)
 		UseTemplate(tmpl).Register(bpath, ".txt")
 
-		bpath = filepath.Join(EjectPath, "views")
+		bpath = filepath.Join(EgretPath, "views")
 		cfg = native.Config{Layout: template.NoLayout}
 		tmpl = native.New(cfg)
 		UseTemplate(tmpl).Register(bpath, ".html")
@@ -405,7 +405,7 @@ func findSrcPaths(importPath string) (egretSourcePath, appSourcePath string) {
 		}).Fatal("Failed to import.")
 	}
 
-	egretPkg, err := build.Import(EjectCoreImportPath, "", build.FindOnly)
+	egretPkg, err := build.Import(EgretCoreImportPath, "", build.FindOnly)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"error": err,
