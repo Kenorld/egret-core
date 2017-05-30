@@ -218,7 +218,6 @@ func (n *pathNode) addChild(path string) *pathNode {
 	return child.addChild(path[end+1:])
 }
 func (n *pathNode) get(method string, url *url.URL) ([]HandlerFunc, map[string]string) {
-	fmt.Println(n.print(0))
 	params := make(map[string]string, 0)
 	handlers := n.innerGet(method, url.Path, url.Path, url.RawQuery, params)
 	return handlers, params
