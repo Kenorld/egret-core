@@ -218,6 +218,7 @@ func (n *pathNode) addChild(path string) *pathNode {
 	return child.addChild(path[end+1:])
 }
 func (n *pathNode) get(method string, url *url.URL) ([]HandlerFunc, map[string]string) {
+	fmt.Println(n.print(0))
 	params := make(map[string]string, 0)
 	handlers := n.innerGet(method, url.Path, url.Path, url.RawQuery, params)
 	return handlers, params
@@ -267,8 +268,7 @@ func (n *pathNode) innerGet(method, fullPath, reset, rawQuery string, params map
 					params[n.pnames[i]] = results[i+1]
 				}
 			} else {
-				msg, _ := fmt.Printf("router tree pnames count %d is not match regex results count %d!", len(n.pnames), len(results))
-				panic(msg)
+				return nil
 			}
 			reset = reset[len(results[0]):]
 		} else {
