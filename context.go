@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -41,7 +42,19 @@ type (
 		ModTime  time.Time
 	}
 )
+var (
+	// StaticCacheDuration expiration duration for INACTIVE file handlers, it's the only one global configuration
+	// which can be changed.
+	StaticCacheDuration = 20 * time.Second
 
+	lastModifiedHeaderKey       = "Last-Modified"
+	ifModifiedSinceHeaderKey    = "If-Modified-Since"
+	contentDispositionHeaderKey = "Content-Disposition"
+	cacheControlHeaderKey       = "Cache-Control"
+	contentEncodingHeaderKey    = "Content-Encoding"
+	acceptEncodingHeaderKey     = "Accept-Encoding"
+	varyHeaderKey               = "Vary"
+)
 func NewContext(req *Request, resp *Response) *Context {
 	return &Context{
 		Request:    req,
@@ -68,6 +81,11 @@ func (c *Context) Get(name string, defaultValue ...interface{}) interface{} {
 // Set stores the named store item in the context so that it can be retrieved later.
 func (c *Context) Set(name string, value interface{}) {
 	c.Store[name] = value
+}
+
+// GetHeader returns the request header's value based on its name.
+func (c *Context) GetHeader(name string) string {
+	return c.Request.Header.Get(name)
 }
 
 // Query returns the first value for the named component of the URL query parameters.
@@ -116,6 +134,56 @@ func (c *Context) Post(key string, defaultValue ...string) string {
 
 func (c *Context) SetCookie(cookie *http.Cookie) {
 	http.SetCookie(c.Response.Writer, cookie)
+}
+// GetCookie returns cookie's value by it's name
+// returns empty string if nothing was found.
+func (c *Context) GetCookie(name string) string {
+	cookie, err := c.Request.Cookie(name)
+	if err != nil {
+		return ""
+	}
+	return cookie.Value
+}
+// RemoveCookie deletes a cookie by it's name.
+func (c *Context) RemoveCookie(name string) {
+	cookie := &http.Cookie{
+		Name: name,
+		Value: "",
+		Path: "/",
+		HttpOnly: true,
+		Expires: time.Now().Add(-time.Duration(1) * time.Minute),
+		MaxAge: -1,
+	}
+	c.SetCookie(cookie)
+	// delete request's cookie also, which is temporary available
+	c.Request.Header.Set("Cookie", "")
+}
+
+// VisitAllCookies takes a visitor which loops
+// on each (request's) cookies' name and value.
+func (c *Context) VisitAllCookies(visitor func(name string, value string)) {
+	for _, cookie := range c.Request.Cookies() {
+		visitor(cookie.Name, cookie.Value)
+	}
+}
+
+var maxAgeExp = regexp.MustCompile(`maxage=(\d+)`)
+
+// MaxAge returns the "cache-control" request header's value
+// seconds as int64
+// if header not found or parse failed then it returns -1.
+func (c *Context) MaxAge() int64 {
+	header := c.GetHeader(cacheControlHeaderKey)
+	if header == "" {
+		return -1
+	}
+	m := maxAgeExp.FindStringSubmatch(header)
+	if len(m) == 2 {
+		if v, err := strconv.Atoi(m[1]); err == nil {
+			return int64(v)
+		}
+	}
+	return -1
 }
 
 func (c *Context) RenderError(err error) {
