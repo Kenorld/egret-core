@@ -74,13 +74,18 @@ func TestSimpleRoutes(t *testing.T) {
 
 func TestMultiRoutes(t *testing.T) {
 	router := NewRouter()
-	router.Path("/test/<id:[^.]+>").Get(handler0)
-	router.Path("/test/<id:[^.]+>.mp4").Get(handler1)
+	router.Path("/<*path>").Options(handler0)
+	router.Path("/test/<id:[^.]+>").Get(handler1)
+	router.Path("/test/<id:[^.]+>.mp4").Get(handler2)
 	fmt.Print(router.tree.pathNode.print(0))
 
 	testURL, _ := url.Parse("http://test.com/test/abc.mp4")
-	handlers, _ := router.Match("GET", testURL)
-	if !isLastHandler(handlers, handler1) {
-		t.Errorf("Not found same handler")
+	handlers, _ := router.Match("OPTIONS", testURL)
+	if !isLastHandler(handlers, handler0) {
+		t.Errorf("OPTIONS: Not found same handler")
+	}
+	handlers, _ = router.Match("GET", testURL)
+	if !isLastHandler(handlers, handler2) {
+		t.Errorf("GET: Not found same handler")
 	}
 }
