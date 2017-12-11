@@ -42,6 +42,7 @@ type (
 		ModTime  time.Time
 	}
 )
+
 var (
 	// StaticCacheDuration expiration duration for INACTIVE file handlers, it's the only one global configuration
 	// which can be changed.
@@ -55,6 +56,7 @@ var (
 	acceptEncodingHeaderKey     = "Accept-Encoding"
 	varyHeaderKey               = "Vary"
 )
+
 func NewContext(req *Request, resp *Response) *Context {
 	return &Context{
 		Request:    req,
@@ -135,6 +137,7 @@ func (c *Context) Post(key string, defaultValue ...string) string {
 func (c *Context) SetCookie(cookie *http.Cookie) {
 	http.SetCookie(c.Response.Writer, cookie)
 }
+
 // GetCookie returns cookie's value by it's name
 // returns empty string if nothing was found.
 func (c *Context) GetCookie(name string) string {
@@ -144,15 +147,16 @@ func (c *Context) GetCookie(name string) string {
 	}
 	return cookie.Value
 }
+
 // RemoveCookie deletes a cookie by it's name.
 func (c *Context) RemoveCookie(name string) {
 	cookie := &http.Cookie{
-		Name: name,
-		Value: "",
-		Path: "/",
+		Name:     name,
+		Value:    "",
+		Path:     "/",
 		HttpOnly: true,
-		Expires: time.Now().Add(-time.Duration(1) * time.Minute),
-		MaxAge: -1,
+		Expires:  time.Now().Add(-time.Duration(1) * time.Minute),
+		MaxAge:   -1,
 	}
 	c.SetCookie(cookie)
 	// delete request's cookie also, which is temporary available
@@ -325,7 +329,7 @@ func sendBinary(req *Request, resp *Response, r *Binary) (err error) {
 	if r.Name != "" {
 		disposition += fmt.Sprintf(`; filename="%s"`, r.Name)
 	}
-	resp.SetHeader("Content-Disposition", disposition)
+	resp.SetHeader(contentDispositionHeaderKey, disposition)
 
 	// If we have a ReadSeeker, delegate to http.ServeContent
 	if rs, ok := r.Reader.(io.ReadSeeker); ok {
@@ -428,6 +432,36 @@ func (c *Context) RenderFileFromPath(fname string, delivery string) *Context {
 		return c.NotFound(fname)
 	}
 	return c.RenderFile(file, delivery)
+}
+
+// SendFile sends file for force-download to the client
+// Use this instead of ServeFile to 'force-download' bigger files to the client.
+func (c *Context) SendFile(file *os.File, destNameArgs ...string) *Context {
+	var (
+		modtime       = time.Now()
+		fileInfo, err = file.Stat()
+		destName      = filepath.Base(file.Name())
+	)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"error": err,
+		}).Warn("RenderFile error.")
+	}
+	if fileInfo != nil {
+		modtime = fileInfo.ModTime()
+	}
+	if len(destNameArgs) > 0 {
+		destName = destNameArgs[0]
+	}
+	return c.RenderBinary(file, destName, "attachment", modtime)
+}
+
+func (c *Context) SendFileFromPath(fname string, destNameArgs ...string) *Context {
+	file, err := os.Open(fname)
+	if err != nil {
+		return c.NotFound(fname)
+	}
+	return c.SendFile(file, destNameArgs...)
 }
 
 // RenderBinary is like RenderFile() except that it instead of a file on disk,
