@@ -1,4 +1,4 @@
 <error>
 	<title>{{.Error.Title}}</title>
-	<description>{{.Error.Description}}</description>
+	<description>{{.Error.Summary}}</description>
 </error>

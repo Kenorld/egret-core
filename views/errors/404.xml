@@ -1,1 +1,1 @@
-<notfound>{{.Error.Description}}</notfound>
+<notfound>{{.Error.Summary}}</notfound>

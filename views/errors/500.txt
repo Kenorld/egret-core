@@ -1,5 +1,5 @@
 {{.Error.Title}}
-{{.Error.Description}}
+{{.Error.Summary}}
 
 {{if eq .RunMode "dev"}}
 {{with .Error}}

@@ -261,7 +261,7 @@ func (c *Context) ExecuteRender() error {
 				Status:      500,
 				Title:       "Error",
 				Path:        "Unknown",
-				Description: c.Error.Error(),
+				Summary: c.Error.Error(),
 			}
 		}
 		e, _ := c.Error.(*Error)
@@ -493,7 +493,7 @@ func (c *Context) Todo() *Context {
 	c.Error = &Error{
 		Status:      500,
 		Title:       "TODO",
-		Description: "This action is not implemented",
+		Summary: "this action is not implemented",
 	}
 	return c
 }
@@ -508,9 +508,9 @@ func (c *Context) NotFound(msg string, objs ...interface{}) *Context {
 	c.Response.Status = http.StatusNotFound
 	c.Error = &Error{
 		Status:      404,
-		Name:        "NOT_FOUND",
+		Name:        "not_found",
 		Title:       "Not Found",
-		Description: finalText,
+		Summary: finalText,
 	}
 	return c
 }
@@ -525,9 +525,9 @@ func (c *Context) Forbidden(msg string, objs ...interface{}) *Context {
 	c.Response.Status = http.StatusForbidden
 	c.Error = &Error{
 		Status:      403,
-		Name:        "FORBIDDEN",
+		Name:        "forbidden",
 		Title:       "Forbidden",
-		Description: finalText,
+		Summary: finalText,
 	}
 	return c
 }

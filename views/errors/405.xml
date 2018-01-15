@@ -1,1 +1,1 @@
-<method-not-allowed>{{.Error.Description}}</method-not-allowed>
+<method-not-allowed>{{.Error.Summary}}</method-not-allowed>

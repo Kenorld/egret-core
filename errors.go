@@ -12,7 +12,7 @@ type Error struct {
 	Status                   int
 	Name                     string
 	SourceType               string   // The type of source that failed to build.
-	Title, Path, Description string   // Description of the error, as presented to the user.
+	Title, Path, Summary string   // Description of the error, as presented to the user.
 	Line, Column             int      // Where the error was encountered.
 	SourceLines              []string // The entire source file, split into lines.
 	Stack                    string   // The raw stack trace string from debug.Stack().
@@ -47,15 +47,17 @@ func NewErrorFromPanic(err interface{}) *Error {
 	fmt.Sscan(stackElement[colonIndex+1:], &line)
 
 	// Show an error page.
-	description := "Unspecified error"
+	summary := "Unspecified error"
 	if err != nil {
-		description = fmt.Sprint(err)
+		summary = fmt.Sprint(err)
 	}
 	return &Error{
-		Title:       "Runtime Panic",
+		Status: 		500,
+		Name: 			"runtime_panic",
+		Title:      "Runtime Panic",
 		Path:        filename[len(basePath):],
 		Line:        line,
-		Description: description,
+		Summary:     summary,
 		SourceLines: MustReadLines(filename),
 		Stack:       stack,
 	}
@@ -81,7 +83,7 @@ func (e *Error) Error() string {
 			header = fmt.Sprintf("%s: ", e.Title)
 		}
 	}
-	return fmt.Sprintf("%s%s", header, e.Description)
+	return fmt.Sprintf("%s%s", header, e.Summary)
 }
 
 // ContextSource method returns a snippet of the source around
