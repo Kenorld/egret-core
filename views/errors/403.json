@@ -1,6 +1,6 @@
 {
-    "status": "{{.Error.Status}}",
-    "name": {{.Error.Name}},
+    "status": {{.Error.Status}},
+    "name": "{{.Error.Name}}",
     "title": "{{js .Error.Title}}",
-    "description": "{{js .Error.Summary}}"
+    "summary": "{{js .Error.Summary}}"
 }
