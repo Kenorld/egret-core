@@ -2,6 +2,7 @@ package egret
 
 import (
 	"fmt"
+	"net/http"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -9,15 +10,15 @@ import (
 
 // Error description, used as an argument to the error template.
 type Error struct {
-	Status                   int
-	Name                     string
-	SourceType               string   // The type of source that failed to build.
+	Status               int
+	Name                 string
+	SourceType           string   // The type of source that failed to build.
 	Title, Path, Summary string   // Description of the error, as presented to the user.
-	Line, Column             int      // Where the error was encountered.
-	SourceLines              []string // The entire source file, split into lines.
-	Stack                    string   // The raw stack trace string from debug.Stack().
-	MetaError                string   // Error that occurred producing the error page.
-	Link                     string   // A configurable link to wrap the error source in
+	Line, Column         int      // Where the error was encountered.
+	SourceLines          []string // The entire source file, split into lines.
+	Stack                string   // The raw stack trace string from debug.Stack().
+	MetaError            string   // Error that occurred producing the error page.
+	Link                 string   // A configurable link to wrap the error source in
 }
 
 // An object to hold the per-source-line details.
@@ -36,7 +37,11 @@ func NewErrorFromPanic(err interface{}) *Error {
 	stack := string(debug.Stack())
 	frame, basePath := findRelevantStackFrame(stack)
 	if frame == -1 {
-		return nil
+		return &Error{
+			Status: http.StatusInternalServerError,
+			Name:   "runtime_panic",
+			Title:  "Runtime Panic",
+		}
 	}
 
 	stack = stack[frame:]
@@ -52,9 +57,9 @@ func NewErrorFromPanic(err interface{}) *Error {
 		summary = fmt.Sprint(err)
 	}
 	return &Error{
-		Status: 		500,
-		Name: 			"runtime_panic",
-		Title:      "Runtime Panic",
+		Status:      http.StatusInternalServerError,
+		Name:        "runtime_panic",
+		Title:       "Runtime Panic",
 		Path:        filename[len(basePath):],
 		Line:        line,
 		Summary:     summary,

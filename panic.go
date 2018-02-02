@@ -1,6 +1,7 @@
 package egret
 
 import (
+	"net/http"
 	"runtime/debug"
 
 	"github.com/Sirupsen/logrus"
@@ -21,19 +22,15 @@ func PanicHandler(ctx *Context) {
 // It cleans up the stack trace, logs it, and displays an error page.
 func handleInvocationPanic(ctx *Context, err interface{}) {
 	nerr := NewErrorFromPanic(err)
-	if nerr == nil && DevMode {
-		// Only show the sensitive information in the debug stack trace in development mode, not production
-		logrus.WithFields(logrus.Fields{
-			"error": nerr,
-			"stack": string(debug.Stack()),
-		}).Error("error")
-		ctx.Response.Writer.WriteHeader(500)
-		ctx.Response.Writer.Write(debug.Stack())
-		return
-	}
+	// Only show the sensitive information in the debug stack trace in development mode, not production
 	logrus.WithFields(logrus.Fields{
 		"error": nerr,
-		"stack": nerr.Stack,
+		"stack": string(debug.Stack()),
 	}).Error("error")
-	ctx.Error = nerr
+	if DevMode {
+		ctx.Response.Writer.WriteHeader(http.StatusInternalServerError)
+		ctx.Response.Writer.Write(debug.Stack())
+	} else {
+		ctx.Error = nerr
+	}
 }
