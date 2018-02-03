@@ -1,6 +1,7 @@
 package egret
 
 import (
+	"fmt"
 	"net/http"
 	"runtime/debug"
 
@@ -23,14 +24,16 @@ func PanicHandler(ctx *Context) {
 func handleInvocationPanic(ctx *Context, err interface{}) {
 	nerr := NewErrorFromPanic(err)
 	// Only show the sensitive information in the debug stack trace in development mode, not production
-	logrus.WithFields(logrus.Fields{
-		"error": nerr,
-		"stack": string(debug.Stack()),
-	}).Error("error")
 	if DevMode {
+		fmt.Println(err)
+		fmt.Println(string(debug.Stack()))
 		ctx.Response.Writer.WriteHeader(http.StatusInternalServerError)
 		ctx.Response.Writer.Write(debug.Stack())
 	} else {
+		logrus.WithFields(logrus.Fields{
+			"error": nerr,
+			"stack": string(debug.Stack()),
+		}).Error("error")
 		ctx.Error = nerr
 	}
 }
