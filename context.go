@@ -258,9 +258,9 @@ func (c *Context) ExecuteRender() error {
 		viewPath := "errors/500." + c.Request.Format
 		if _, ok := c.Error.(*Error); !ok {
 			c.Error = &Error{
-				Status:      500,
-				Title:       "Error",
-				Path:        "Unknown",
+				Status:  500,
+				Title:   "Error",
+				Path:    "Unknown",
 				Summary: c.Error.Error(),
 			}
 		}
@@ -491,8 +491,8 @@ func (c *Context) Redirect(url string, status ...int) *Context {
 func (c *Context) Todo() *Context {
 	c.Response.Status = http.StatusNotImplemented
 	c.Error = &Error{
-		Status:      500,
-		Title:       "TODO",
+		Status:  500,
+		Title:   "TODO",
 		Summary: "this action is not implemented",
 	}
 	return c
@@ -507,9 +507,9 @@ func (c *Context) NotFound(msg string, objs ...interface{}) *Context {
 	}
 	c.Response.Status = http.StatusNotFound
 	c.Error = &Error{
-		Status:      404,
-		Name:        "not_found",
-		Title:       "Not Found",
+		Status:  404,
+		Name:    "not_found",
+		Title:   "Not Found",
 		Summary: finalText,
 	}
 	return c
@@ -524,9 +524,9 @@ func (c *Context) Forbidden(msg string, objs ...interface{}) *Context {
 	}
 	c.Response.Status = http.StatusForbidden
 	c.Error = &Error{
-		Status:      403,
-		Name:        "forbidden",
-		Title:       "Forbidden",
+		Status:  403,
+		Name:    "forbidden",
+		Title:   "Forbidden",
 		Summary: finalText,
 	}
 	return c
