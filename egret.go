@@ -369,7 +369,7 @@ func initLog() {
 	if output == "stdout" || output == "stderr" {
 		logrus.SetOutput(os.Stdout)
 	} else {
-		logFile, err := os.Create(output)
+		logFile, err := CreateFile(output)
 		if err != nil {
 			logrus.Warnf("Couldn't open log-file, falling back to stdout: %s", err)
 		} else {

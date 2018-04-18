@@ -14,8 +14,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/kenorld/egret-conf"
 	"github.com/Sirupsen/logrus"
+	"github.com/kenorld/egret-conf"
 )
 
 const (
@@ -122,6 +122,17 @@ func ContentTypeByFilename(filename string) string {
 	}
 
 	return contentType
+}
+
+func EnsureDir(dirname string) error {
+	return os.MkdirAll(dirname, os.ModePerm)
+}
+func EnsureFileDir(filename string) error {
+	return EnsureDir(filepath.Dir(filename))
+}
+func CreateFile(filename string) (*os.File, error) {
+	EnsureFileDir(filename)
+	return os.Create(filename)
 }
 
 // DirExists returns true if the given path exists and is a directory.
