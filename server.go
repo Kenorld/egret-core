@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 
 	enet "github.com/kenorld/egret-core/net"
 	"golang.org/x/crypto/acme/autocert"

@@ -19,7 +19,7 @@ import (
 	"github.com/kenorld/egret-core/template"
 	"github.com/kenorld/egret-core/template/native"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 const (

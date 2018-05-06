@@ -3,7 +3,7 @@ import:
 - package: github.com/kenorld/egret-conf
   subpackages:
   - github.com\kenorld\egret-conf
-- package: github.com/Sirupsen/logrus
+- package: github.com/sirupsen/logrus
   subpackages:
   - github.com\Sirupsen\logrus
 - package: github.com/bradfitz/gomemcache
