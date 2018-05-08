@@ -94,7 +94,7 @@ func getHandler(rootPaths []string, indexes []string, listing bool, file string)
 						logrus.WithFields(logrus.Fields{
 							"path":  vpath,
 							"error": err,
-						}).Warn("File not found")
+						}).Warn("File not found.")
 					}
 					ctx.NotFound("File not found.")
 					return
@@ -122,7 +122,7 @@ func getHandler(rootPaths []string, indexes []string, listing bool, file string)
 					logrus.WithFields(logrus.Fields{
 						"path": vpath,
 					}).Warn("Attempted directory listing.")
-					ctx.Forbidden("Directory listing not allowed")
+					ctx.Forbidden("Directory listing not allowed.")
 					return
 				}
 				return
