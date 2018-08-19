@@ -1,9 +1,12 @@
 package egret
 
 import (
+	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"errors"
+	"io"
+	"io/ioutil"
 	"reflect"
 	"strconv"
 )
@@ -34,15 +37,20 @@ var (
 // JSONDataReader reads the request body as JSON-formatted data.
 type JSONDataReader struct{}
 
+func readRequestBody(req *Request) io.Reader {
+	body, _ := ioutil.ReadAll(req.Body)
+	req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	return bytes.NewBuffer(body)
+}
 func (r *JSONDataReader) Read(req *Request, data interface{}) error {
-	return json.NewDecoder(req.Body).Decode(data)
+	return json.NewDecoder(readRequestBody(req)).Decode(data)
 }
 
 // XMLDataReader reads the request body as XML-formatted data.
 type XMLDataReader struct{}
 
 func (r *XMLDataReader) Read(req *Request, data interface{}) error {
-	return xml.NewDecoder(req.Body).Decode(data)
+	return xml.NewDecoder(readRequestBody(req)).Decode(data)
 }
 
 // FormDataReader reads the query parameters and request body as form data.
