@@ -53,7 +53,7 @@ func handleInternal(w http.ResponseWriter, r *http.Request, ws *websocket.Conn) 
 		}
 	}
 	if len(c.Handlers) == 0 {
-		c.NotFound("No handle found!")
+		c.NotFound("no handle found")
 	}
 	c.Next()
 
