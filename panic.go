@@ -24,6 +24,7 @@ func handleInvocationPanic(ctx *Context, err interface{}) {
 	nerr := NewErrorFromPanic(err)
 	// Only show the sensitive information in the debug stack trace in development mode, not production
 	if DevMode {
+		fmt.Println(err)
 		fmt.Println(string(debug.Stack()))
 	} else {
 		logrus.WithFields(logrus.Fields{
