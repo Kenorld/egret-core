@@ -76,7 +76,7 @@ func handleInternal(w http.ResponseWriter, r *http.Request, ws *websocket.Conn) 
 		logrus.WithFields(logrus.Fields{
 			"ClientIP": ClientIP(r),
 			"Status":   c.Response.Status,
-			"Time":     time.Since(start),
+			"Duration": time.Since(start),
 			"Method":   req.Method,
 			"Path":     req.URL.Path,
 		}).Info("Client requested")
@@ -121,7 +121,6 @@ func Serve(port int) *Server {
 			WriteTimeout: time.Duration(Config.GetIntDefault("timeout.write", 0)) * time.Second,
 		},
 	}
-
 	server.run()
 	return server
 }
