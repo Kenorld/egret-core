@@ -15,8 +15,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
-
 	"github.com/kenorld/egret-conf"
 	"github.com/kenorld/egret-core/logging"
 	"github.com/kenorld/egret-core/serializer"
@@ -371,17 +369,6 @@ func initLog() {
 		"messageKey":   "message",
 		"levelKey":     "level",
 		"levelEncoder": "lowercase",
-		// "timekey":       "T",
-		// "levelkey":      "L",
-		// "namekey":       "N",
-		// "callerkey":     "C",
-		// "messagekey":    "M",
-		// "stacktracekey": "S",
-		// "LineEnding":     "\n",
-		// "encodeLevel":    zapcore.CapitalLevelEncoder,
-		// "encodeTime":     zapcore.ISO8601TimeEncoder,
-		// "encodeDuration": zapcore.StringDurationEncoder,
-		// "encodeCaller":   zapcore.ShortCallerEncoder,
 	}
 	if frawConfig["encoderConfig"] != nil {
 		econfig := frawConfig["encoderConfig"].(map[interface{}]interface{})
@@ -395,7 +382,6 @@ func initLog() {
 	if err := json.Unmarshal(rawJSON, &cfg); err != nil {
 		panic(err)
 	}
-	spew.Dump(cfg)
 	logger, err := logging.Init(&cfg)
 	if err != nil {
 		panic(err)

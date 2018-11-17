@@ -40,7 +40,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleInternal(w http.ResponseWriter, r *http.Request, ws *websocket.Conn) {
-	// start := time.Now()
+	start := time.Now()
 	var (
 		req  = NewRequest(r)
 		resp = NewResponse(w)
@@ -68,17 +68,13 @@ func handleInternal(w http.ResponseWriter, r *http.Request, ws *websocket.Conn) 
 	}
 
 	if DevMode {
-		// fmt.Println("====1", req.Method, req.URL.Path)
-		// fmt.Println("====2", req.URL.Path)
-		// fmt.Println("====3", ClientIP(r))
-		// fmt.Println("====4", time.Since(start))
-		// Logger.Info("Client requested",
-		// 	zap.String("client_ip", ClientIP(r)),
-		// 	zap.Int("status", c.Response.Status),
-		// 	zap.Duration("duration", time.Since(start)),
-		// 	zap.String("method", req.Method),
-		// 	zap.String("path", req.URL.Path),
-		// )
+		Logger.Info("Client requested",
+			zap.String("client_ip", ClientIP(r)),
+			zap.Int("status", c.Response.Status),
+			zap.String("duration", fmt.Sprint(time.Since(start))), //error when use zap.Duration.
+			zap.String("method", req.Method),
+			zap.String("path", req.URL.Path),
+		)
 	}
 }
 
