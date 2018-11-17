@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kenorld/egret-conf"
+	conf "github.com/kenorld/egret-conf"
 	"github.com/kenorld/egret-core/logging"
 	"github.com/kenorld/egret-core/serializer"
 	"github.com/kenorld/egret-core/template"
@@ -33,10 +33,6 @@ const (
 	DefaultDateTimeFormat = "2006-01-02 15:04"
 )
 
-var invalidSlugPattern = regexp.MustCompile(`[^a-z0-9 _-]`)
-var whiteSpacePattern = regexp.MustCompile(`\s+`)
-var Logger *zap.Logger
-
 var (
 	AppName     string // e.g. "sample"
 	AppRoot     string // e.g. "/app1"
@@ -44,6 +40,10 @@ var (
 	AppCorePath string // e.g. "/Users/user/gocode/src/corp/sample/app"
 	ImportPath  string // e.g. "corp/sample"
 	SourcePath  string // e.g. "/Users/user/gocode/src"
+
+	invalidSlugPattern = regexp.MustCompile(`[^a-z0-9 _-]`)
+	whiteSpacePattern  = regexp.MustCompile(`\s+`)
+	Logger             *zap.Logger
 
 	Config  *conf.Context
 	RunMode string // Application-defined (by default, "dev" or "prod")
@@ -210,6 +210,14 @@ var (
 		"even": func(a int) bool { return (a % 2) == 0 },
 	}
 )
+
+func init() {
+	logger, err := zap.NewDevelopment()
+	if err != nil {
+		panic("Can not create logger")
+	}
+	Logger = logger
+}
 
 // Init initializes Egret -- it provides paths for getting around the app.
 //
@@ -410,7 +418,7 @@ func findSrcPaths(importPath string) (egretSourcePath, appSourcePath string) {
 
 	appPkg, err := build.Import(importPath, "", build.FindOnly)
 	if err != nil {
-		Logger.Warn("Failed to import", zap.String("import_path", importPath), zap.Error(err))
+		Logger.Error("Failed to import", zap.String("import_path", importPath), zap.Error(err))
 	}
 
 	egretPkg, err := build.Import(EgretCoreImportPath, "", build.FindOnly)
