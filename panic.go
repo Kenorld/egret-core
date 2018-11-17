@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"runtime/debug"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 )
 
 // PanicHandler wraps the action invocation in a protective defer blanket that
@@ -27,10 +27,7 @@ func handleInvocationPanic(ctx *Context, err interface{}) {
 		fmt.Println(err)
 		fmt.Println(string(debug.Stack()))
 	} else {
-		logrus.WithFields(logrus.Fields{
-			"error": nerr,
-			"stack": string(debug.Stack()),
-		}).Error("error")
+		Logger.Error("invocation panic", zap.Error(nerr), zap.String("stack", string(debug.Stack())))
 	}
 	ctx.Error = nerr
 }

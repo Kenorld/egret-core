@@ -2,6 +2,7 @@ package egret
 
 import (
 	"crypto/tls"
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -11,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	enet "github.com/kenorld/egret-core/net"
 	"golang.org/x/crypto/acme/autocert"
@@ -39,7 +40,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleInternal(w http.ResponseWriter, r *http.Request, ws *websocket.Conn) {
-	start := time.Now()
+	// start := time.Now()
 	var (
 		req  = NewRequest(r)
 		resp = NewResponse(w)
@@ -59,9 +60,7 @@ func handleInternal(w http.ResponseWriter, r *http.Request, ws *websocket.Conn) 
 
 	err := c.ExecuteRender()
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"Error": err,
-		}).Info("Render error.")
+		Logger.Info("Render error", zap.Error(err))
 	}
 	// Close the Writer if we can
 	if w, ok := resp.Writer.(io.Closer); ok {
@@ -69,17 +68,17 @@ func handleInternal(w http.ResponseWriter, r *http.Request, ws *websocket.Conn) 
 	}
 
 	if DevMode {
-		// Egret request access log format
-		// RequestStartTime ClientIP ResponseStatus RequestLatency HTTPMethod URLPath
-		// Sample format:
-		// 2016/05/25 17:46:37.112 127.0.0.1 200  270.157µs GET /
-		logrus.WithFields(logrus.Fields{
-			"ClientIP": ClientIP(r),
-			"Status":   c.Response.Status,
-			"Duration": time.Since(start),
-			"Method":   req.Method,
-			"Path":     req.URL.Path,
-		}).Info("Client requested")
+		// fmt.Println("====1", req.Method, req.URL.Path)
+		// fmt.Println("====2", req.URL.Path)
+		// fmt.Println("====3", ClientIP(r))
+		// fmt.Println("====4", time.Since(start))
+		// Logger.Info("Client requested",
+		// 	zap.String("client_ip", ClientIP(r)),
+		// 	zap.Int("status", c.Response.Status),
+		// 	zap.Duration("duration", time.Since(start)),
+		// 	zap.String("method", req.Method),
+		// 	zap.String("path", req.URL.Path),
+		// )
 	}
 }
 
@@ -146,11 +145,11 @@ func (server *Server) run() {
 	if server.tlsEnabled {
 		typ += "/HTTP2"
 	}
-	Logger.Printf("Egret listen and serve %s on %v", typ, server.Addr)
+	Logger.Info(fmt.Sprintf("Egret listen and serve %s on %v", typ, server.Addr))
 
 	err := server.Server.Serve(ln)
 	if realServeError(err) != nil {
-		Logger.Fatalln("%v\n", err)
+		Logger.Fatal("%v\n", zap.Error(err))
 	}
 }
 
@@ -198,29 +197,27 @@ func (server *Server) listen() net.Listener {
 
 	if server.network == "unix" {
 		if errOs := os.Remove(server.Addr); errOs != nil && !os.IsNotExist(errOs) {
-			Logger.WithFields(logrus.Fields{
-				"Addr":  server.Addr,
-				"Error": errOs.Error(),
-			}).Fatalln("[NET:UNIX] Unexpected error when trying to remove unix socket file.")
+			Logger.Fatal("[NET:UNIX] Unexpected error when trying to remove unix socket file",
+				zap.String("address", server.Addr),
+				zap.String("error", errOs.Error()),
+			)
 			return nil
 		}
 		defer func() {
 			err := os.Chmod(HttpAddr, UnixFileMode)
 			if err != nil {
-				Logger.WithFields(logrus.Fields{
-					"unixFileMode": server.unixFileMode,
-					"Addr":         server.Addr,
-					"Error":        err.Error(),
-				}).Fatalln("[NET:UNIX] chmod error!")
+				Logger.Fatal("[NET:UNIX] chmod error",
+					zap.Any("unix_file_mode", server.unixFileMode),
+					zap.String("address", server.Addr),
+					zap.Error(err),
+				)
 			}
 		}()
 	}
 
 	ln, err := graceNet.Listen(server.network, server.Addr)
 	if err != nil {
-		Logger.WithFields(logrus.Fields{
-			"Error": err,
-		}).Fatalln("Server Error!")
+		Logger.Fatal("Server error", zap.Error(err))
 		return nil
 	}
 	ln = tcpKeepAliveListener{ln.(*net.TCPListener)}

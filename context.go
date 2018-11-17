@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"github.com/spf13/cast"
 )
 
@@ -416,9 +416,7 @@ func (c *Context) RenderFile(file *os.File, delivery string) *Context {
 		fileInfo, err = file.Stat()
 	)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"error": err,
-		}).Warn("RenderFile error.")
+		Logger.Warn("Render file error", zap.Error(err))
 	}
 	if fileInfo != nil {
 		modtime = fileInfo.ModTime()
@@ -443,9 +441,7 @@ func (c *Context) SendFile(file *os.File, destNameArgs ...string) *Context {
 		destName      = filepath.Base(file.Name())
 	)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"error": err,
-		}).Warn("RenderFile error.")
+		Logger.Warn("Send file error", zap.Error(err))
 	}
 	if fileInfo != nil {
 		modtime = fileInfo.ModTime()

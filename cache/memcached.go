@@ -4,8 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/kenorld/egret-core/logging"
+	"go.uber.org/zap"
 )
 
 // Wraps the Memcached client to meet the Cache interface.
@@ -61,10 +62,8 @@ func (c MemcachedCache) Decrement(key string, delta uint64) (newValue uint64, er
 }
 
 func (c MemcachedCache) Flush() error {
-	err := errors.New("egret/cache: can not flush memcached.")
-	logrus.WithFields(logrus.Fields{
-		"error": err,
-	}).Error("Cache error.")
+	err := errors.New("egret/cache: can not flush memcached")
+	logging.Logger.Error("Cache error", zap.Error(err))
 	return err
 }
 
@@ -111,8 +110,6 @@ func convertMemcacheError(err error) error {
 		return ErrNotStored
 	}
 
-	logrus.WithFields(logrus.Fields{
-		"error": err,
-	}).Error("egret/cache.")
+	logging.Logger.Error("egret/cache", zap.Error(err))
 	return err
 }

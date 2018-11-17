@@ -8,7 +8,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
+
 	"github.com/spf13/cast"
 )
 
@@ -59,7 +60,7 @@ func Static(zone *Zone, rootPaths []string, options ...map[string]interface{}) {
 			indexes = ois
 		} else {
 			indexes = []string{}
-			logrus.Warn("Error satic option indexes value and ignored.")
+			Logger.Warn("Error satic option indexes value and ignored")
 		}
 	}
 
@@ -91,18 +92,12 @@ func getHandler(rootPaths []string, indexes []string, listing bool, file string)
 			if err != nil {
 				if os.IsNotExist(err) || err.(*os.PathError).Err == syscall.ENOTDIR {
 					if RunMode == "dev" {
-						logrus.WithFields(logrus.Fields{
-							"path":  vpath,
-							"error": err,
-						}).Warn("File not found.")
+						Logger.Warn("File not found", zap.String("path", vpath), zap.Error(err))
 					}
-					ctx.NotFound("File not found.")
+					ctx.NotFound("File not found")
 					return
 				}
-				logrus.WithFields(logrus.Fields{
-					"path":  vpath,
-					"error": err,
-				}).Error("Error trying to get fileinfo.")
+				Logger.Error("Error trying to get file info", zap.String("path", vpath), zap.Error(err))
 				ctx.RenderError(err)
 				return
 			}
@@ -119,9 +114,7 @@ func getHandler(rootPaths []string, indexes []string, listing bool, file string)
 						return
 					}
 					// Disallow directory listing
-					logrus.WithFields(logrus.Fields{
-						"path": vpath,
-					}).Warn("Attempted directory listing.")
+					Logger.Warn("Attempted directory listing", zap.String("path", vpath))
 					ctx.Forbidden("Directory listing not allowed.")
 					return
 				}
@@ -138,17 +131,11 @@ func renderFile(ctx *Context, fname string) {
 	file, err := os.Open(fname)
 	if err != nil {
 		if os.IsNotExist(err) {
-			logrus.WithFields(logrus.Fields{
-				"path":  fname,
-				"error": err,
-			}).Warn("File not found", fname, err)
-			ctx.NotFound("File not found.")
+			Logger.Warn("File not found", zap.String("path", fname), zap.Error(err))
+			ctx.NotFound("File not found")
 			return
 		}
-		logrus.WithFields(logrus.Fields{
-			"path":  fname,
-			"error": err,
-		}).Error("Error opening.")
+		Logger.Error("Error opening", zap.String("path", fname), zap.Error(err))
 		ctx.RenderError(err)
 		return
 	}

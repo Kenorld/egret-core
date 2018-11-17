@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"gopkg.in/fsnotify.v1"
 )
 
@@ -47,9 +47,7 @@ func NewWatcher() *Watcher {
 func (w *Watcher) Listen(listener Listener, roots ...string) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"error": err,
-		}).Fatal("Fatal error.")
+		Logger.Fatal("Fatal error", zap.Error(err))
 	}
 
 	// Replace the unbuffered Event channel with a buffered one.
@@ -73,10 +71,7 @@ func (w *Watcher) Listen(listener Listener, roots ...string) {
 
 		fi, err := os.Stat(p)
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"path":  p,
-				"error": err,
-			}).Error("Failed to stat watched path.")
+			Logger.Error("Failed to stat watched path", zap.String("path", p), zap.Error(err))
 			continue
 		}
 
@@ -84,10 +79,7 @@ func (w *Watcher) Listen(listener Listener, roots ...string) {
 		if !fi.IsDir() {
 			err = watcher.Add(p)
 			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"path":  p,
-					"error": err,
-				}).Error("Failed to watch.")
+				Logger.Error("Failed to watch", zap.String("path", p), zap.Error(err))
 			}
 			continue
 		}
@@ -96,9 +88,7 @@ func (w *Watcher) Listen(listener Listener, roots ...string) {
 
 		watcherWalker = func(path string, info os.FileInfo, err error) error {
 			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"error": err,
-				}).Error("Error walking path.")
+				Logger.Error("Error walking path", zap.Error(err))
 				return nil
 			}
 
@@ -111,10 +101,7 @@ func (w *Watcher) Listen(listener Listener, roots ...string) {
 
 				err = watcher.Add(path)
 				if err != nil {
-					logrus.WithFields(logrus.Fields{
-						"path":  path,
-						"error": err,
-					}).Error("Failed to watch.")
+					Logger.Error("Failed to watch", zap.String("path", p), zap.Error(err))
 				}
 			}
 			return nil
@@ -123,10 +110,7 @@ func (w *Watcher) Listen(listener Listener, roots ...string) {
 		// Else, walk the directory tree.
 		err = Walk(p, watcherWalker)
 		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"path":  p,
-				"error": err,
-			}).Error("Failed to walk directory.")
+			Logger.Error("Failed to walk directory", zap.String("path", p), zap.Error(err))
 		}
 	}
 

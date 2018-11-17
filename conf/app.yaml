@@ -119,11 +119,10 @@ render:
     mode: normal
     
 
-  log:
-    # Where to log the various Egret logs
-    output: "stdout"
+  logger:
+    outputs: {_: ["stdout"], error: ["stderr"]}
     level: "info"
-    format: "text"
+    format: "console"
 
 ################################################################################
 # Section: prod
@@ -138,6 +137,7 @@ render:
   watch:
     enabled: false
 
-  log:
-    output: "egret.log"
+  logger:
+    outputs: {_: ["stdout"], error: ["stderr"]}
     level: "info"
+    format: "json"

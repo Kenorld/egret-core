@@ -35,7 +35,7 @@ func (e *Serializer) Serialize(val interface{}, options ...map[string]interface{
 	} else {
 		b = val.([]byte)
 	}
-	buf := blackfriday.MarkdownCommon(b)
+	buf := blackfriday.Run(b)
 	if e.config.MarkdownSanitize {
 		buf = bluemonday.UGCPolicy().SanitizeBytes(buf)
 	}

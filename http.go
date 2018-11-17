@@ -8,8 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sirupsen/logrus"
-
+	"go.uber.org/zap"
 	"golang.org/x/net/websocket"
 )
 
@@ -232,9 +231,7 @@ func ResolveAcceptLanguage(req *http.Request) AcceptLanguages {
 		if qualifiedRange := strings.Split(languageRange, ";q="); len(qualifiedRange) == 2 {
 			quality, error := strconv.ParseFloat(qualifiedRange[1], 32)
 			if error != nil {
-				logrus.WithFields(logrus.Fields{
-					"languageRange": languageRange,
-				}).Warn("Detected malformed Accept-Language header quality, assuming quality is 1")
+				Logger.Warn("Detected malformed Accept-Language header quality, assuming quality is 1", zap.String("language_range", languageRange))
 				acceptLanguages[i] = AcceptLanguage{qualifiedRange[0], 1}
 			} else {
 				acceptLanguages[i] = AcceptLanguage{qualifiedRange[0], float32(quality)}

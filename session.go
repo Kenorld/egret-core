@@ -8,8 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/sirupsen/logrus"
 )
 
 // Session A signed cookie (and thus limited to 4kb in size).
@@ -115,7 +113,7 @@ func GetSessionFromCookie(cookie *http.Cookie) Session {
 
 	// Verify the signature.
 	if !Verify(data, sig) {
-		logrus.Warn("Session cookie signature failed")
+		Logger.Warn("Session cookie signature failed")
 		return session
 	}
 

@@ -14,7 +14,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"github.com/kenorld/egret-conf"
 )
 
@@ -95,9 +95,7 @@ func ParseKeyValueCookie(val string, cb func(key, val string)) {
 func LoadMimeConfig() {
 	config, err := conf.LoadContext("mime-types", ConfPaths)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"error": err,
-		}).Fatal("Failed to load mime type config.")
+		Logger.Fatal("Failed to load mime type config", zap.Error(err))
 	}
 	mimeConfig = config
 }

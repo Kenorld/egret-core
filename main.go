@@ -1,6 +1,7 @@
 package egret
 
 import (
+	"encoding/json"
 	"go/build"
 	"html"
 	htmpl "html/template"
@@ -14,12 +15,17 @@ import (
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"github.com/kenorld/egret-conf"
+	"github.com/kenorld/egret-core/logging"
 	"github.com/kenorld/egret-core/serializer"
 	"github.com/kenorld/egret-core/template"
 	"github.com/kenorld/egret-core/template/native"
+	"github.com/spf13/cast"
+	strcase "github.com/stoewer/go-strcase"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 )
 
 const (
@@ -31,7 +37,7 @@ const (
 
 var invalidSlugPattern = regexp.MustCompile(`[^a-z0-9 _-]`)
 var whiteSpacePattern = regexp.MustCompile(`\s+`)
-var Logger = logrus.StandardLogger()
+var Logger *zap.Logger
 
 var (
 	AppName     string // e.g. "sample"
@@ -190,7 +196,7 @@ var (
 					return plural
 				}
 			default:
-				logrus.Error("pluralize: unexpected type: ", v)
+				Logger.Error("pluralize: unexpected type: " + cast.ToString(v))
 			}
 			return singular
 		},
@@ -304,11 +310,7 @@ func Init(mode, importPath, srcPath string) {
 	DateFormat = Config.GetStringDefault("format.date", DefaultDateFormat)
 
 	// Initialized = true
-	logrus.WithFields(logrus.Fields{
-		"Version":          Version,
-		"BuildDate":        BuildDate,
-		"MinimumGoVersion": MinimumGoVersion,
-	}).Info("Initialized Egret.")
+	Logger.Info("Initialized Egret", zap.String("version", Version), zap.String("build_date", BuildDate), zap.String("miniumn_go_version", MinimumGoVersion))
 
 	initTemplate()
 	initSerializer()
@@ -351,31 +353,54 @@ func initSerializer() {
 }
 
 func initLog() {
-	level := Config.GetStringDefault("log.level", "warning")
-	output := Config.GetStringDefault("log.output", "stderr")
-	format := Config.GetStringDefault("log.format", "json")
-
-	lvlnum, err := logrus.ParseLevel(level)
-	if err != nil {
-		lvlnum = logrus.WarnLevel
+	rawConfig := Config.GetStringMap("logger")
+	if rawConfig["output_paths"] == nil {
+		rawConfig["output_paths"] = Config.GetStringSliceDefault("logger.outputs._", []string{"stdout"})
 	}
-	logrus.SetLevel(lvlnum)
-
-	if format == "json" {
-		logrus.SetFormatter(&logrus.JSONFormatter{})
-	} else if format == "text" || format == "txt" {
-		logrus.SetFormatter(&logrus.TextFormatter{ForceColors: false})
+	if rawConfig["error_output_paths"] == nil {
+		rawConfig["error_output_paths"] = Config.GetStringSliceDefault("logger.outputs.err", []string{"stderr"})
 	}
-	if output == "stdout" || output == "stderr" {
-		logrus.SetOutput(os.Stdout)
-	} else {
-		logFile, err := CreateFile(output)
-		if err != nil {
-			logrus.Warnf("Couldn't open log-file, falling back to stdout: %s", err)
-		} else {
-			logrus.SetOutput(logFile)
+	if rawConfig["encoding"] == nil {
+		rawConfig["encoding"] = Config.GetStringDefault("logger.format", "json")
+	}
+	frawConfig := map[string]interface{}{}
+	for key, value := range rawConfig {
+		frawConfig[strcase.LowerCamelCase(key)] = value
+	}
+	feconfig := map[string]interface{}{
+		"messageKey":   "message",
+		"levelKey":     "level",
+		"levelEncoder": "lowercase",
+		// "timekey":       "T",
+		// "levelkey":      "L",
+		// "namekey":       "N",
+		// "callerkey":     "C",
+		// "messagekey":    "M",
+		// "stacktracekey": "S",
+		// "LineEnding":     "\n",
+		// "encodeLevel":    zapcore.CapitalLevelEncoder,
+		// "encodeTime":     zapcore.ISO8601TimeEncoder,
+		// "encodeDuration": zapcore.StringDurationEncoder,
+		// "encodeCaller":   zapcore.ShortCallerEncoder,
+	}
+	if frawConfig["encoderConfig"] != nil {
+		econfig := frawConfig["encoderConfig"].(map[interface{}]interface{})
+		for key, value := range econfig {
+			feconfig[strcase.LowerCamelCase(key.(string))] = value
 		}
 	}
+	frawConfig["encoderConfig"] = feconfig
+	rawJSON, _ := json.Marshal(frawConfig)
+	cfg := zap.Config{}
+	if err := json.Unmarshal(rawJSON, &cfg); err != nil {
+		panic(err)
+	}
+	spew.Dump(cfg)
+	logger, err := logging.Init(&cfg)
+	if err != nil {
+		panic(err)
+	}
+	Logger = logger
 }
 
 // findSrcPaths uses the "go/build" package to find the source root for Egret
@@ -387,29 +412,24 @@ func findSrcPaths(importPath string) (egretSourcePath, appSourcePath string) {
 	)
 
 	if len(gopaths) == 0 {
-		logrus.Fatal("GOPATH environment variable is not set. Please refer to http://golang.org/doc/code.html to configure your Go environment.")
+		Logger.Fatal("GOPATH environment variable is not set. Please refer to http://golang.org/doc/code.html to configure your Go environment")
 	}
 
 	if ContainsString(gopaths, goroot) {
-		logrus.WithFields(logrus.Fields{
-			"GOPATH": gopaths,
-			"GOROOT": goroot,
-		}).Fatal("GOPATH must not include your GOROOT. Please refer to http://golang.org/doc/code.html to configure your Go environment.")
+		Logger.Fatal("GOPATH must not include your GOROOT. Please refer to http://golang.org/doc/code.html to configure your Go environment",
+			zap.Strings("GOPATH", gopaths),
+			zap.String("GOROOT", goroot),
+		)
 	}
 
 	appPkg, err := build.Import(importPath, "", build.FindOnly)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"importPath": importPath,
-			"error":      err,
-		}).Warn("Failed to import.")
+		Logger.Warn("Failed to import", zap.String("import_path", importPath), zap.Error(err))
 	}
 
 	egretPkg, err := build.Import(EgretCoreImportPath, "", build.FindOnly)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"error": err,
-		}).Fatal("Failed to find Egret.")
+		Logger.Fatal("Failed to find Egret", zap.Error(err))
 	}
 
 	return egretPkg.SrcRoot, appPkg.SrcRoot
@@ -461,7 +481,7 @@ func addModule(name, importPath, modulePath string) {
 		}
 	}
 
-	logrus.Info("Loaded module: " + filepath.Base(modulePath))
+	Logger.Info("Loaded module: " + filepath.Base(modulePath))
 
 	// Hack: There is presently no way for the testrunner module to add the
 	// "test" subdirectory to the CodePaths.  So this does it instead.

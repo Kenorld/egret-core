@@ -5,7 +5,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
+	"github.com/kenorld/egret-core/logging"
 )
 
 type InMemoryCache struct {
@@ -29,9 +30,7 @@ func (c InMemoryCache) Get(key string, ptrValue interface{}) error {
 	}
 
 	err := fmt.Errorf("egret/cache: attempt to get %s, but can not set value %v", key, v)
-	logrus.WithFields(logrus.Fields{
-		"error": err,
-	}).Error("Cache error")
+	logging.Logger.Error("Cache error", zap.Error(err))
 	return err
 }
 

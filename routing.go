@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 )
 
@@ -154,7 +153,7 @@ func (r *Router) Path(path string, constraint ...ConstraintFunc) *Zone {
 
 func (z *Zone) Path(path string) *Zone {
 	path = joinPath(z.path, path)
-	logrus.Info(path)
+	Logger.Info(path)
 	if z.host != nil {
 		z.host.tree.add(path)
 	}
@@ -229,7 +228,7 @@ func (z *Zone) Name(name string) *Zone {
 	}
 
 	if namedZones[name] != nil {
-		logrus.Error("Named path already setted: " + name)
+		Logger.Error("Named path already setted: " + name)
 	}
 	namedZones[name] = z
 	return z

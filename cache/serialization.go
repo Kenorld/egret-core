@@ -6,9 +6,8 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/sirupsen/logrus"
-
-	"github.com/kenorld/egret-core"
+	"github.com/kenorld/egret-core/logging"
+	"go.uber.org/zap"
 )
 
 // Serialize transforms the given value into bytes following these rules:
@@ -30,10 +29,7 @@ func Serialize(value interface{}) ([]byte, error) {
 	var b bytes.Buffer
 	encoder := gob.NewEncoder(&b)
 	if err := encoder.Encode(value); err != nil {
-		logrus.WithFields(logrus.Fields{
-			"value": value,
-			"error": err,
-		}).Error("egret/cache: gob encoding failed.")
+		logging.Logger.Error("egret/cache: gob encoding failed", zap.Any("value", value), zap.Error(err))
 		return nil, err
 	}
 	return b.Bytes(), nil
@@ -53,10 +49,7 @@ func Deserialize(byt []byte, ptr interface{}) (err error) {
 			var i int64
 			i, err = strconv.ParseInt(string(byt), 10, 64)
 			if err != nil {
-				logrus.WithFields(logrus.Fields{
-				"value": string(byt),
-				"error": err
-			}).Error("egret/cache: failed to parse int.")
+				logging.Logger.Error("egret/cache: failed to parse int", zap.String("value", string(byt)), zap.Error(err))
 			} else {
 				p.SetInt(i)
 			}
@@ -66,10 +59,7 @@ func Deserialize(byt []byte, ptr interface{}) (err error) {
 			var i uint64
 			i, err = strconv.ParseUint(string(byt), 10, 64)
 			if err != nil {
-				logrus.WithFields(logrus.Fields{
-				"value": string(byt),
-				"error": err
-			}).Error("egret/cache: failed to parse uint.")
+				logging.Logger.Error("egret/cache: failed to parse uint", zap.String("value", string(byt)), zap.Error(err))
 			} else {
 				p.SetUint(i)
 			}
@@ -80,9 +70,7 @@ func Deserialize(byt []byte, ptr interface{}) (err error) {
 	b := bytes.NewBuffer(byt)
 	decoder := gob.NewDecoder(b)
 	if err = decoder.Decode(ptr); err != nil {
-		logrus.WithFields(logrus.Fields{
-				"error": err
-			}).Error("egret/cache: gob decoding failed")
+		logging.Logger.Error("egret/cache: gob decoding failed", zap.Error(err))
 		return
 	}
 	return
