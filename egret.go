@@ -402,7 +402,7 @@ func findSrcPaths(importPath string) (egretSourcePath, appSourcePath string) {
 		logrus.WithFields(logrus.Fields{
 			"importPath": importPath,
 			"error":      err,
-		}).Fatal("Failed to import.")
+		}).Warn("Failed to import.")
 	}
 
 	egretPkg, err := build.Import(EgretCoreImportPath, "", build.FindOnly)
