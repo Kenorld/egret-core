@@ -71,8 +71,8 @@ func handleInternal(w http.ResponseWriter, r *http.Request, ws *websocket.Conn) 
 		Logger.Info("Client requested",
 			zap.String("client_ip", ClientIP(r)),
 			zap.Int("status", c.Response.Status),
-			// zap.String("duration", fmt.Sprint(time.Since(start))), //error when use zap.Duration.
-			zap.Duration("duration", time.Since(start)),
+			zap.String("duration", fmt.Sprint(time.Since(start))), //error when use zap.Duration.
+			// zap.Duration("duration", time.Since(start)),
 			zap.String("method", req.Method),
 			zap.String("path", req.URL.Path),
 		)

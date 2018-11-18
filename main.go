@@ -1,7 +1,9 @@
 package egret
 
 import (
+	"bufio"
 	"encoding/json"
+	"errors"
 	"go/build"
 	"html"
 	htmpl "html/template"
@@ -244,7 +246,18 @@ func Init(mode, importPath, srcPath string) {
 	}
 
 	EgretPath = filepath.Join(egretSourcePath, filepath.FromSlash(EgretCoreImportPath))
-	BasePath = filepath.Join(SourcePath, filepath.FromSlash(importPath))
+	currPath, _ := filepath.Abs("./")
+	modFile := filepath.Join(currPath, "go.mod")
+	if _, err := os.Stat(modFile); err == nil {
+		if modName, err := getModuleNameFromModfile(modFile); err == nil {
+			if modName == importPath || importPath == "" {
+				BasePath = currPath
+			}
+		}
+	}
+	if BasePath == "" {
+		BasePath = filepath.Join(SourcePath, filepath.FromSlash(importPath))
+	}
 	AppCorePath = filepath.Join(BasePath, "core")
 
 	CodePaths = []string{AppCorePath}
@@ -397,6 +410,29 @@ func initLog() {
 	Logger = logger
 }
 
+func getModuleNameFromModfile(fpath string) (string, error) {
+	file, err := os.Open(fpath)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	// Start reading from the file with a reader.
+	reader := bufio.NewReader(file)
+
+	var line string
+	for {
+		line, err = reader.ReadString('\n')
+		if err != nil {
+			return "", err
+		}
+		if line[0:6] == "module" {
+			return strings.TrimSpace(strings.Split(line, " ")[1]), nil
+		}
+	}
+	return "", errors.New("parse module file unknown error")
+}
+
 // findSrcPaths uses the "go/build" package to find the source root for Egret
 // and the app.
 func findSrcPaths(importPath string) (egretSourcePath, appSourcePath string) {
@@ -416,16 +452,25 @@ func findSrcPaths(importPath string) (egretSourcePath, appSourcePath string) {
 		)
 	}
 
-	appPkg, err := build.Import(importPath, "", build.FindOnly)
-	if err != nil {
-		Logger.Error("Failed to import", zap.String("import_path", importPath), zap.Error(err))
-	}
-
 	egretPkg, err := build.Import(EgretCoreImportPath, "", build.FindOnly)
 	if err != nil {
 		Logger.Fatal("Failed to find Egret", zap.Error(err))
 	}
 
+	currPath, _ := filepath.Abs("./")
+	modFile := filepath.Join(currPath, "go.mod")
+	if _, err := os.Stat(modFile); err == nil {
+		if modName, err := getModuleNameFromModfile(modFile); err == nil {
+			if modName == importPath || importPath == "" {
+				return egretPkg.SrcRoot, currPath
+			}
+		}
+	}
+
+	appPkg, err := build.Import(importPath, "", build.FindOnly)
+	if err != nil {
+		Logger.Error("Failed to import", zap.String("import_path", importPath), zap.Error(err))
+	}
 	return egretPkg.SrcRoot, appPkg.SrcRoot
 }
 
